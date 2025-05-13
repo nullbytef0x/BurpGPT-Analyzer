@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class DataMasker {
 
     // Common patterns for sensitive data
-    private static final Pattern API_KEY_PATTERN = Pattern.compile("(?i)(api[-_]?key|apikey|x-api[-_]?key|api[-_]?token|app[-_]?key|app[-_]?secret|client[-_]?secret)([\"\\s:=]+)([\"']?)(\\w+)([\"']?)");
+    private static final Pattern API_KEY_PATTERN = Pattern.compile("(?i)(api[-_]?key|apikey|x-api[-_]?key|api[-_]?token|app[-_]?key|app[-_]?secret|client[-_]?secret|access[-_]?key|secret[-_]?key)([\"\\s:=]+)([\"']?)(\\w{16,})([\"']?)");
     private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)(Authorization[\"\\s:=]+)([\"']?)(Basic|Bearer|OAuth|Token|Digest|SAML|Negotiate)\\s+([\\w\\.-]+[=]*[/+]*[=]*)([\"']?)");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("(?i)(password|passwd|pwd|secret|credentials|pass)([\"\\s:=]+)([\"']?)([^&\"'\\s}{\\]\\[\\n\\r]{3,})([\"']?)");
     private static final Pattern SESSION_COOKIE_PATTERN = Pattern.compile("(?i)((session|sid|auth|token|jwt|access_token|id_token|JSESSIONID|PHPSESSID|ASP.NET_SessionId)=)([^&;\\s]{3,})");
@@ -20,6 +20,15 @@ public class DataMasker {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b");
     private static final Pattern SSN_PATTERN = Pattern.compile("\\b\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{4}\\b");
     private static final Pattern JWT_TOKEN_PATTERN = Pattern.compile("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,})\\b");
+    private static final Pattern AWS_KEY_PATTERN = Pattern.compile("\\b(AKIA[0-9A-Z]{16})\\b");
+    private static final Pattern GOOGLE_API_KEY_PATTERN = Pattern.compile("\\b(AIza[0-9A-Za-z\\-_]{35})\\b");
+    private static final Pattern PRIVATE_KEY_PATTERN = Pattern.compile("-----BEGIN (RSA |DSA |EC )?PRIVATE KEY-----");
+    private static final Pattern OAUTH_CLIENT_ID_PATTERN = Pattern.compile("(?i)(client_id|client[-_]?secret)([\"\\s:=]+)([\"']?)([\\w-]{10,})([\"']?)");
+    private static final Pattern STRIPE_KEY_PATTERN = Pattern.compile("\\b(sk_live_[0-9a-zA-Z]{24}|pk_live_[0-9a-zA-Z]{24})\\b");
+    private static final Pattern FIREBASE_KEY_PATTERN = Pattern.compile("\\bAIza[0-9A-Za-z-_]{35}\\b");
+
+    // Track which types of sensitive data were detected
+    private static final Map<String, Integer> detectedSensitiveDataTypes = new HashMap<>();
 
     // For storing original values if needed for future reference
     private static final Map<String, String> originalValues = new HashMap<>();    /**
@@ -33,43 +42,62 @@ public class DataMasker {
         }
 
         originalValues.clear();
+        detectedSensitiveDataTypes.clear();
         String result = input;
         
         // Mask API keys
-        result = maskPattern(result, API_KEY_PATTERN, 4);
+        result = maskPattern(result, API_KEY_PATTERN, 4, "API Key");
         
         // Mask auth tokens
-        result = maskPattern(result, AUTHORIZATION_PATTERN, 4);
+        result = maskPattern(result, AUTHORIZATION_PATTERN, 4, "Authorization Token");
         
         // Mask passwords
-        result = maskPattern(result, PASSWORD_PATTERN, 4);
+        result = maskPattern(result, PASSWORD_PATTERN, 4, "Password");
         
         // Mask session cookies
-        result = maskPattern(result, SESSION_COOKIE_PATTERN, 3);
+        result = maskPattern(result, SESSION_COOKIE_PATTERN, 3, "Session Cookie");
         
         // Mask JWT tokens
-        result = maskPattern(result, JWT_TOKEN_PATTERN, 1);
+        result = maskPattern(result, JWT_TOKEN_PATTERN, 1, "JWT Token");
+        
+        // Mask AWS keys
+        result = maskPattern(result, AWS_KEY_PATTERN, 1, "AWS Key");
+        
+        // Mask Google API keys
+        result = maskPattern(result, GOOGLE_API_KEY_PATTERN, 1, "Google API Key");
+        
+        // Mask OAuth client IDs and secrets
+        result = maskPattern(result, OAUTH_CLIENT_ID_PATTERN, 4, "OAuth Client ID/Secret");
+        
+        // Mask Stripe keys
+        result = maskPattern(result, STRIPE_KEY_PATTERN, 0, "Stripe API Key");
+        
+        // Mask Firebase keys
+        result = maskPattern(result, FIREBASE_KEY_PATTERN, 0, "Firebase Key");
+        
+        // Mask private keys
+        result = maskPattern(result, PRIVATE_KEY_PATTERN, 0, "Private Key");
         
         // Mask credit cards
-        result = maskPattern(result, CREDIT_CARD_PATTERN, 0);
+        result = maskPattern(result, CREDIT_CARD_PATTERN, 0, "Credit Card");
         
         // Mask emails (enabled for better security)
-        result = maskPattern(result, EMAIL_PATTERN, 0);
+        result = maskPattern(result, EMAIL_PATTERN, 0, "Email Address");
         
         // Mask SSNs
-        result = maskPattern(result, SSN_PATTERN, 0);
+        result = maskPattern(result, SSN_PATTERN, 0, "SSN");
         
         return result;
-    }
-    
-    /**
+    }    /**
      * Applies masking to a specific pattern match
      */
-    private static String maskPattern(String input, Pattern pattern, int captureGroup) {
+    private static String maskPattern(String input, Pattern pattern, int captureGroup, String dataType) {
         Matcher matcher = pattern.matcher(input);
         StringBuffer sb = new StringBuffer();
+        int matchCount = 0;
         
         while (matcher.find()) {
+            matchCount++;
             String valueToMask = matcher.group(captureGroup);
             if (valueToMask != null && valueToMask.length() > 4) {
                 // Keep first 4 chars, mask the rest
@@ -77,8 +105,11 @@ public class DataMasker {
                                     "*".repeat(Math.max(0, valueToMask.length() - 4));
                 
                 // Store original for reference if needed
-                String key = "masked_" + originalValues.size();
+                String key = dataType + "_" + originalValues.size();
                 originalValues.put(key, valueToMask);
+                
+                // Track the type of sensitive data detected
+                detectedSensitiveDataTypes.put(dataType, detectedSensitiveDataTypes.getOrDefault(dataType, 0) + 1);
                 
                 String replacement = matcher.group().replace(valueToMask, maskedValue);
                 matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
@@ -89,5 +120,37 @@ public class DataMasker {
         matcher.appendTail(sb);
         
         return sb.toString();
+    }
+    
+    /**
+     * Returns the count of masked values
+     * @return Number of masked values
+     */
+    public static int getMaskedValueCount() {
+        return originalValues.size();
+    }
+    
+    /**
+     * Returns a map of the types of sensitive data detected and their counts
+     * @return Map of sensitive data types and counts
+     */
+    public static Map<String, Integer> getDetectedSensitiveDataTypes() {
+        return new HashMap<>(detectedSensitiveDataTypes);
+    }
+    
+    /**
+     * Clears the stored original values and detection counts
+     */
+    public static void clearData() {
+        originalValues.clear();
+        detectedSensitiveDataTypes.clear();
+    }
+    
+    /**
+     * Determines if any sensitive data was detected
+     * @return true if sensitive data was detected, false otherwise
+     */
+    public static boolean hasSensitiveData() {
+        return !originalValues.isEmpty();
     }
 }
