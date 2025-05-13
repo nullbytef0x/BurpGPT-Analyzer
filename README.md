@@ -5,11 +5,7 @@
 </div>
 
 <div align="center">
-    ![BurpGPT Analyzer Logo](https://img.shields.io/badge/BurpGPT-Analyzer-orange?style=for-the-badge&logo=burp-suite&logoColor=white)  [![Version](https://img.shields.io/badge/Version-2025.4.2-blue.svg?style=flat-square)](https://github.com/nullbytef0x/BurpGPT_Analyzer)
-  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
-  [![Powered by](https://img.shields.io/badge/Powered_by-Gemini_AI-purple.svg?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev/)
-  [![Java](https://img.shields.io/badge/Java-17%2B-red.svg?style=flat-square&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
-  [![Burp](https://img.shields.io/badge/Burp_Suite-2025.2+-orange.svg?style=flat-square)](https://portswigger.net/burp)
+
 
   <h3>An AI-Powered Security Analysis Extension for BurpSuite</h3>
   
