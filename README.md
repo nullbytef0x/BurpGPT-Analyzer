@@ -139,10 +139,8 @@ BurpGPT Analyzer leverages Google's powerful Gemini AI models to provide state-o
      <tr>
        <td><b>Custom Prompt Examples</b></td>
        <td>
-         <code>"Check for IDOR vulnerabilities in this endpoint"</code><br>
          <code>"Analyze the authentication mechanism in this request"</code><br>
          <code>"Suggest possible SQL injection points in this request"</code><br>
-         <code>"Generate bypass payloads for the WAF patterns in this response"</code>
        </td>
      </tr>
    </table>
@@ -344,35 +342,6 @@ BurpGPT Analyzer prioritizes security with its robust data protection features:
   For more details, see the <a href="LICENSE">LICENSE</a> file.
 </div>
 
-## 📝 Changelog
-
-### Version 2025.4.2 (May 2025)
-- ✅ Enhanced sensitive data masking with improved pattern detection
-- ✅ Added support for detecting Stripe, AWS and Firebase keys
-- ✅ Added detection for Generic Secrets, URL Authentication, JSON Tokens, IP Credentials, and Azure Connection Strings
-- ✅ Fixed HTML rendering issues in vulnerability reports
-- ✅ Implemented real-time notification of masked sensitive data with counts
-- ✅ Added detailed breakdown of detected sensitive data types
-- ✅ Improved CSS styling for better vulnerability presentation
-- ✅ Enhanced risk rating system (Critical/High/Medium/Low) 
-- ✅ Fixed issue with proper sensitive data masking before AI analysis
-- ✅ Fixed bug causing sensitive data leaks in vulnerability reports
-- ✅ Improved UI notification for ongoing security analysis
-- ✅ Added robust error handling to the masking process
-
-### Version 2025.2.0 (April 2025)
-- ✅ Added automatic sensitive data masking for enhanced security
-- ✅ Improved detection of API keys, JWT tokens, and credentials
-- ✅ Enhanced HTML rendering with responsive design elements
-- ✅ Added visual risk indicators for vulnerability severity
-- ✅ Implemented notification system for data protection features
-- ✅ Fixed UI issues with HTML display in vulnerability reports
-
-### Version 2025.1.1 (March 2025)
-- ✅ Initial public release
-- ✅ Basic vulnerability scanning capabilities
-- ✅ Integration with Google Gemini AI
-- ✅ Burp Suite UI integration
 
 ---
 
