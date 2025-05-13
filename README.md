@@ -5,9 +5,7 @@
 </div>
 
 <div align="center">
-  
-  ![BurpGPT Analyzer Logo](https://img.shields.io/badge/BurpGPT-Analyzer-orange?style=for-the-badge&logo=burp-suite&logoColor=white)
-  [![Version](https://img.shields.io/badge/Version-2025.1.1-blue.svg?style=flat-square)](https://github.com/nullbytef0x/BurpGPT_Analyzer)
+    ![BurpGPT Analyzer Logo](https://img.shields.io/badge/BurpGPT-Analyzer-orange?style=for-the-badge&logo=burp-suite&logoColor=white)  [![Version](https://img.shields.io/badge/Version-2025.4.2-blue.svg?style=flat-square)](https://github.com/nullbytef0x/BurpGPT_Analyzer)
   [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
   [![Powered by](https://img.shields.io/badge/Powered_by-Gemini_AI-purple.svg?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev/)
   [![Java](https://img.shields.io/badge/Java-17%2B-red.svg?style=flat-square&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
@@ -47,6 +45,8 @@ Whether you're a penetration tester, security researcher, or web security enthus
         <li>📊 <b>PoC examples and payloads</b> for confirmed vulnerabilities</li>
         <li>🧩 <b>Seamless integration</b> with Burp Suite's UI and context menu</li>
         <li>⚡ <b>Real-time assessments</b> of security weaknesses</li>
+        <li>🔒 <b>Automatic sensitive data masking</b> for secure AI processing</li>
+        <li>🚨 <b>Enhanced detection of exposed credentials</b> and API keys</li>
       </ul>
     </td>
     <td width="50%">
@@ -56,6 +56,8 @@ Whether you're a penetration tester, security researcher, or web security enthus
         <li>💻 <b>Custom script generation</b> for complex attack scenarios</li>
         <li>🛠️ <b>Payload customization</b> for specific target environments</li>
         <li>🤖 <b>Powered by Google Gemini AI</b> for cutting-edge intelligence</li>
+        <li>📱 <b>Improved HTML rendering</b> with responsive vulnerability reports</li>
+        <li>⭐ <b>Risk-based categorization</b> with clear severity indicators</li>
       </ul>
     </td>
   </tr>
@@ -65,12 +67,14 @@ Whether you're a penetration tester, security researcher, or web security enthus
 
 <div align="center">
   <p><b>BurpGPT Analyzer in action:</b></p>
-  
-  <p><img src="src/img/Screenshot1.png" alt="BurpGPT Analyzer Interface" width="800"></p>
+    <p><img src="src/img/Screenshot1.png" alt="BurpGPT Analyzer Interface" width="800"></p>
   <p><em>Screenshot 1: Main BurpGPT Analyzer interface showing vulnerability analysis</em></p>
   
   <p><img src="src/img/Screenshot2.png" alt="BurpGPT Settings Panel" width="800"></p>
   <p><em>Screenshot 2: BurpGPT Settings panel for configuring Gemini API integration</em></p>
+  
+  <p><img src="src/img/sentive_data_leakage.png" alt="BurpGPT Sensitive Data Detection" width="800"></p>
+  <p><em>Screenshot 3: Sensitive data detection and masking functionality in action</em></p>
 </div>
 
 ## 🔌 AI Integration
@@ -153,12 +157,7 @@ BurpGPT Analyzer leverages Google's powerful Gemini AI models to provide state-o
    - Ask for specific payload suggestions when needed
    - Request exploitation steps if applicable
 
-5. The AI will analyze:
-   - The selected request/response (if checked)
-   - Your custom prompt
-   - The context of the HTTP interaction
-   
-6. Review the generated analysis and apply the findings to your security testing.
+
 
 ## ⚙️ Configuration and Settings
 
@@ -286,16 +285,59 @@ AI-powered extensibility opens up new possibilities for solving challenges that 
 
 </details>
 
+## 🔐 Sensitive Data Protection
+
+BurpGPT Analyzer prioritizes security with its robust data protection features:
+
+### 🛡️ Automatic Data Masking
+
+<table>
+  <tr>
+    <td width="50%">
+      <b>Protected Data Types:</b>
+      <ul>
+        <li>API Keys & Tokens</li>
+        <li>Authentication Credentials</li>
+        <li>Session Identifiers</li>
+        <li>JWT Tokens</li>
+        <li>Email Addresses</li>
+        <li>Credit Card Numbers</li>
+        <li>Social Security Numbers (SSNs)</li>
+        <li>AWS Access Keys</li>
+        <li>Google API Keys</li>
+        <li>OAuth Client Secrets</li>
+        <li>Private Keys (RSA/DSA/EC)</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <b>Security Benefits:</b>
+      <ul>
+        <li>Protects sensitive data from being shared with AI services</li>
+        <li>Transparent notification when masking is applied</li>
+        <li>Preserves enough context for accurate analysis</li>
+        <li>Automatic detection and categorization of sensitive data</li>
+        <li>Clear vulnerability reporting for detected sensitive data</li>
+        <li>Risk-based assessment of exposed credentials</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Security_First-Data_Protection-red?style=for-the-badge" alt="Security First">
+</div>
+
 ## 📊 Version
 
 <div align="left">
-  <b>2025.4.1</b>
+  <b>2025.4.2</b>
 </div>
 
-## 👤 Author
+## 👥 Authors
 
 <div align="left">
-  <b><a href="https://github.com/nullbytef0x">nullbytef0x</a></b>
+  <b><a href="https://github.com/nullbytef0x">nullbytef0x</a></b><br>
+  <b><a href="https://github.com/Anuththara08">Anuththara08</a></b>
 </div>
 
 ## 📜 License
@@ -305,6 +347,36 @@ AI-powered extensibility opens up new possibilities for solving challenges that 
   <br>
   For more details, see the <a href="LICENSE">LICENSE</a> file.
 </div>
+
+## 📝 Changelog
+
+### Version 2025.4.2 (May 2025)
+- ✅ Enhanced sensitive data masking with improved pattern detection
+- ✅ Added support for detecting Stripe, AWS and Firebase keys
+- ✅ Added detection for Generic Secrets, URL Authentication, JSON Tokens, IP Credentials, and Azure Connection Strings
+- ✅ Fixed HTML rendering issues in vulnerability reports
+- ✅ Implemented real-time notification of masked sensitive data with counts
+- ✅ Added detailed breakdown of detected sensitive data types
+- ✅ Improved CSS styling for better vulnerability presentation
+- ✅ Enhanced risk rating system (Critical/High/Medium/Low) 
+- ✅ Fixed issue with proper sensitive data masking before AI analysis
+- ✅ Fixed bug causing sensitive data leaks in vulnerability reports
+- ✅ Improved UI notification for ongoing security analysis
+- ✅ Added robust error handling to the masking process
+
+### Version 2025.2.0 (April 2025)
+- ✅ Added automatic sensitive data masking for enhanced security
+- ✅ Improved detection of API keys, JWT tokens, and credentials
+- ✅ Enhanced HTML rendering with responsive design elements
+- ✅ Added visual risk indicators for vulnerability severity
+- ✅ Implemented notification system for data protection features
+- ✅ Fixed UI issues with HTML display in vulnerability reports
+
+### Version 2025.1.1 (March 2025)
+- ✅ Initial public release
+- ✅ Basic vulnerability scanning capabilities
+- ✅ Integration with Google Gemini AI
+- ✅ Burp Suite UI integration
 
 ---
 

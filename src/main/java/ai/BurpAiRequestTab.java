@@ -140,13 +140,14 @@ public class BurpAiRequestTab extends JPanel
         });
 
         analyzeButton.addActionListener(runPrompt::accept);
-    }
-
-    private void analyzeRequest(HttpRequest request,
+    }    private void analyzeRequest(HttpRequest request,
                                 HttpResponse response,
                                 JEditorPane aiResponseArea,
                                 boolean includeRequestResponse,
                                 String customInput) {
+        // Clear any existing data from previous analyses
+        DataMasker.clearData();
+        
         // Always include request/response now, so no need for the includeRequestResponse parameter
         // but keeping it for backward compatibility
         String promptText = buildPromptText(true, customInput, request, response);        if (promptText == null) {
@@ -169,7 +170,8 @@ public class BurpAiRequestTab extends JPanel
 
         // Execute the AI prompt in a separate thread
         executorService.execute(() -> {
-            try {                // Apply data masking
+            try {
+                // Apply data masking before sending to the AI
                 String maskedPrompt = DataMasker.mask(promptText);
                 int maskedValueCount = DataMasker.getMaskedValueCount();
                   // Log that data masking has been applied
@@ -247,16 +249,17 @@ public class BurpAiRequestTab extends JPanel
                     "th { background-color: #f2f2f2; }" +
                     "tr:nth-child(even) { background-color: #f9f9f9; }" +
                     "</style></head><body>" + sensitiveDataAlert + htmlContent + "</body></html>";logging.logToOutput("AI response received successfully");
+                  // Clear sensitive data immediately after constructing the HTML
+                DataMasker.clearData();
                 
                 // Set the content type first before setting text to ensure proper HTML rendering
                 SwingUtilities.invokeLater(() -> {
                     aiResponseArea.setContentType("text/html");
                     aiResponseArea.setText(styledHtmlContent);
-                });
-                
-                // Clear the DataMasker data after we're done
+                });            } catch (RuntimeException error) {
+                // Make sure to clear any sensitive data 
                 DataMasker.clearData();
-            } catch (RuntimeException error) {
+                
                 // More detailed error message with troubleshooting steps
                 String errorMessage = error.getMessage();
                 final String errorDetails = "<html><body style='width: 400px; font-family: sans-serif;'>" +
@@ -336,18 +339,16 @@ public class BurpAiRequestTab extends JPanel
             promptBuilder.append("- Server-Side Request Forgery (SSRF)\n");
             promptBuilder.append("- Insecure Direct Object References (IDOR)\n\n");
             
-            // Mask sensitive data in request
-            String maskedRequest = DataMasker.mask(request.toString());
+            // Include request for analysis with a clear marker for masking
             promptBuilder
                     .append("REQUEST:\n")
-                    .append(maskedRequest);
+                    .append(request.toString());
 
             if (response != null) {
-                // Mask sensitive data in response
-                String maskedResponse = DataMasker.mask(response.toString());
+                // Include the raw response to allow proper masking in analyzeRequest
                 promptBuilder
                         .append("\n\nRESPONSE:\n")
-                        .append(maskedResponse);
+                        .append(response.toString());
             }
 
             promptBuilder.append("\n\n");

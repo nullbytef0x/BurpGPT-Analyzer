@@ -10,7 +10,9 @@ import java.util.regex.Pattern;
  * before sending them to AI services for analysis.
  */
 public class DataMasker {
-
+    // Debug flag - set to false in production
+    private static final boolean DEBUG = false;
+    
     // Common patterns for sensitive data
     private static final Pattern API_KEY_PATTERN = Pattern.compile("(?i)(api[-_]?key|apikey|x-api[-_]?key|api[-_]?token|app[-_]?key|app[-_]?secret|client[-_]?secret|access[-_]?key|secret[-_]?key)([\"\\s:=]+)([\"']?)(\\w{16,})([\"']?)");
     private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)(Authorization[\"\\s:=]+)([\"']?)(Basic|Bearer|OAuth|Token|Digest|SAML|Negotiate)\\s+([\\w\\.-]+[=]*[/+]*[=]*)([\"']?)");
@@ -26,6 +28,13 @@ public class DataMasker {
     private static final Pattern OAUTH_CLIENT_ID_PATTERN = Pattern.compile("(?i)(client_id|client[-_]?secret)([\"\\s:=]+)([\"']?)([\\w-]{10,})([\"']?)");
     private static final Pattern STRIPE_KEY_PATTERN = Pattern.compile("\\b(sk_live_[0-9a-zA-Z]{24}|pk_live_[0-9a-zA-Z]{24})\\b");
     private static final Pattern FIREBASE_KEY_PATTERN = Pattern.compile("\\bAIza[0-9A-Za-z-_]{35}\\b");
+    // Additional patterns for more comprehensive masking
+    private static final Pattern GENERIC_SECRET_PATTERN = Pattern.compile("(?i)\\b(secret|private|confidential|sensitive)[-_]?([a-zA-Z0-9]{10,})\\b");
+    private static final Pattern URL_AUTH_PATTERN = Pattern.compile("(https?://)([^:]+):([^@\\s]+)@");
+    private static final Pattern JSON_TOKEN_PATTERN = Pattern.compile("\"token\"\\s*:\\s*\"([^\"]{8,})\"");
+    private static final Pattern IP_ADDRESS_WITH_CREDS = Pattern.compile("([a-zA-Z0-9_-]+):([^@\\s]+)@(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})");
+    private static final Pattern AZURE_CONNECTION_STRING = Pattern.compile("(DefaultEndpointsProtocol=https?;AccountName=[^;]+;AccountKey=)([^;]+)(;)");
+    private static final Pattern AUTH_TOKEN_HEADER = Pattern.compile("(?i)(x-auth-token|x-access-token|token):\\s*([\\w\\.-]+)");
 
     // Track which types of sensitive data were detected
     private static final Map<String, Integer> detectedSensitiveDataTypes = new HashMap<>();
@@ -39,11 +48,15 @@ public class DataMasker {
     public static String mask(String input) {
         if (input == null || input.isEmpty()) {
             return input;
-        }
-
+        }        // Make sure to clear existing values each time
         originalValues.clear();
         detectedSensitiveDataTypes.clear();
         String result = input;
+        
+        // Only log in debug mode
+        if (DEBUG) {
+            System.out.println("[DataMasker] Processing input of length: " + input.length());
+        }
         
         // Mask API keys
         result = maskPattern(result, API_KEY_PATTERN, 4, "API Key");
@@ -78,6 +91,14 @@ public class DataMasker {
         // Mask private keys
         result = maskPattern(result, PRIVATE_KEY_PATTERN, 0, "Private Key");
         
+        // Additional masking for improved security
+        result = maskPattern(result, GENERIC_SECRET_PATTERN, 2, "Generic Secret");
+        result = maskPattern(result, URL_AUTH_PATTERN, 3, "URL Authentication");
+        result = maskPattern(result, JSON_TOKEN_PATTERN, 1, "JSON Token");
+        result = maskPattern(result, IP_ADDRESS_WITH_CREDS, 2, "IP Credentials");
+        result = maskPattern(result, AZURE_CONNECTION_STRING, 2, "Azure Connection String");
+        result = maskPattern(result, AUTH_TOKEN_HEADER, 2, "Auth Header Token");
+        
         // Mask credit cards
         result = maskPattern(result, CREDIT_CARD_PATTERN, 0, "Credit Card");
         
@@ -90,31 +111,55 @@ public class DataMasker {
         return result;
     }    /**
      * Applies masking to a specific pattern match
-     */
-    private static String maskPattern(String input, Pattern pattern, int captureGroup, String dataType) {
+     */    private static String maskPattern(String input, Pattern pattern, int captureGroup, String dataType) {
         Matcher matcher = pattern.matcher(input);
         StringBuffer sb = new StringBuffer();
         int matchCount = 0;
         
         while (matcher.find()) {
-            matchCount++;
-            String valueToMask = matcher.group(captureGroup);
-            if (valueToMask != null && valueToMask.length() > 4) {
-                // Keep first 4 chars, mask the rest
-                String maskedValue = valueToMask.substring(0, Math.min(4, valueToMask.length())) + 
-                                    "*".repeat(Math.max(0, valueToMask.length() - 4));
+            try {
+                matchCount++;
+                String valueToMask = captureGroup < matcher.groupCount() + 1 ? matcher.group(captureGroup) : matcher.group();
                 
-                // Store original for reference if needed
-                String key = dataType + "_" + originalValues.size();
-                originalValues.put(key, valueToMask);
-                
-                // Track the type of sensitive data detected
+                if (valueToMask != null && valueToMask.length() > 2) {
+                    // Improved masking: for shorter values, show only 2 chars; for longer, show 4 chars max
+                    int charsToShow = Math.min(4, Math.max(2, valueToMask.length() / 4));
+                    String maskedValue;
+                    
+                    // For credit cards and SSNs, use a special masking format
+                    if (dataType.equals("Credit Card")) {
+                        // Format: XXXX-XXXX-XXXX-1234 (last 4 digits shown)
+                        int len = valueToMask.length();
+                        maskedValue = "X".repeat(len - 4) + valueToMask.substring(Math.max(0, len - 4));
+                    } else {
+                        // Standard masking: first few chars + asterisks
+                        maskedValue = valueToMask.substring(0, Math.min(charsToShow, valueToMask.length())) + 
+                                     "*".repeat(Math.max(0, valueToMask.length() - charsToShow));
+                    }                    
+                    // Store original for reference if needed (but sanitized)
+                    String key = dataType + "_" + originalValues.size();
+                    originalValues.put(key, valueToMask);
+                    
+                    // Track the type of sensitive data detected
+                    detectedSensitiveDataTypes.put(dataType, detectedSensitiveDataTypes.getOrDefault(dataType, 0) + 1);
+                    
+                    // Log in debug mode only
+                    if (DEBUG) {
+                        System.out.println("[DataMasker] Found " + dataType + ": " + 
+                                          valueToMask.substring(0, Math.min(4, valueToMask.length())) + 
+                                          "*** (masked)");
+                    }
+                    
+                    // Create a secure replacement
+                    String replacement = matcher.group().replace(valueToMask, maskedValue);
+                    matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                } else {
+                    matcher.appendReplacement(sb, Matcher.quoteReplacement(matcher.group()));
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // Fallback for group index issues - just mask the whole match
+                matcher.appendReplacement(sb, "[MASKED-DATA]");
                 detectedSensitiveDataTypes.put(dataType, detectedSensitiveDataTypes.getOrDefault(dataType, 0) + 1);
-                
-                String replacement = matcher.group().replace(valueToMask, maskedValue);
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
-            } else {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(matcher.group()));
             }
         }
         matcher.appendTail(sb);

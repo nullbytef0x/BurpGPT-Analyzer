@@ -55,7 +55,7 @@ public class Extension implements BurpExtension {    public static final String 
         "Avoid theoretical discussions or lengthy explanations. " +
         "Additionally, provide direct answers to any user questions or inputs related to security testing.";
 
-    private static final String PERSISTENCE_KEY = "AIHTTPAnalyzer";
+    private static final String PERSISTENCE_KEY = "BurpGPTAnalyzer";
     private ExecutorService executorService;
     private BurpAITab burpAITab;
 
@@ -89,11 +89,10 @@ public class Extension implements BurpExtension {    public static final String 
                 api.userInterface().registerSuiteTab("BurpGPT Analyzer", burpAITab.getUiComponent());
                 api.userInterface().registerSuiteTab("BurpGPT Settings", settingsPanel);
                 api.userInterface().registerContextMenuItemsProvider(new BurpAIContextMenu(burpAITab));
-                
-                // Log success message
+                  // Log success message
                 logging.logToOutput("BurpGPT Analyzer extension loaded successfully.\n" + 
-                                    "Author: ALPEREN ERGEL (@alpernae)\n" + 
-                                    "Version: 2025.1.1\n" +
+                                    "Authors:  Nullbytef0x(@nullbytef0x)), Anuththara (@Anuththara08)\n" + 
+                                    "Version: 2025.4.2\n" +
                                     "AI Provider: Google Gemini API");
             } catch (Exception e) {
                 logging.logToError("Error initializing UI components: " + e.getMessage());
