@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'net.portswigger.burp.extensions.example'
+version '2025.1.1' // fixed version number
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'net.portswigger.burp.extensions:montoya-api:2025.2' // Burp API
+    implementation 'org.commonmark:commonmark:0.18.2' // Markdown rendering
+    implementation 'com.vladsch.flexmark:flexmark-all:0.64.8'
+    implementation 'org.jsoup:jsoup:1.14.3' // HTML sanitization
+    
+    // Simple HTTP client and JSON parser - no Google Cloud dependencies
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
