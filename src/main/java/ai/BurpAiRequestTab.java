@@ -225,9 +225,7 @@ public class BurpAiRequestTab extends JPanel
                         "<p>All sensitive data has been automatically masked to protect security. " +
                         "Review the findings below for detailed analysis.</p>" +
                         "</div>";
-                }
-
-                String styledHtmlContent = 
+                }                String styledHtmlContent = 
                     "<html><head><style>" +
                     "body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.5; padding: 10px; color: #333; }" +
                     "h1 { color: #ff6633; margin-top: 20px; margin-bottom: 10px; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 5px; }" +
@@ -248,7 +246,7 @@ public class BurpAiRequestTab extends JPanel
                     "th, td { text-align: left; padding: 8px; border: 1px solid #ddd; }" +
                     "th { background-color: #f2f2f2; }" +
                     "tr:nth-child(even) { background-color: #f9f9f9; }" +
-                    "</style></head><body>" + sensitiveDataAlert + htmlContent + "</body></html>";                logging.logToOutput("AI response received successfully");
+                    "</style></head><body>" + sensitiveDataAlert + htmlContent + "</body></html>";logging.logToOutput("AI response received successfully");
                 
                 // Set the content type first before setting text to ensure proper HTML rendering
                 SwingUtilities.invokeLater(() -> {
