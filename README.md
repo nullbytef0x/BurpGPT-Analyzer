@@ -227,12 +227,6 @@ The BurpGPT Analyzer helps security professionals generate and customize proof-o
 
 </div>
 
-### 🧩 PoC Customization
-
-- Request language-specific implementations (Python, JavaScript, curl, etc.)
-- Get explanations for each part of the exploit
-- Receive guidance on safe testing practices
-
 ### 📋 Security Testing Workflow
 
 1. Identify vulnerability
