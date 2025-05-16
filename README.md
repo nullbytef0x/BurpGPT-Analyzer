@@ -171,14 +171,6 @@ BurpGPT Analyzer provides a comprehensive settings panel accessible through the 
 
 </details>
 
-The panel includes user-friendly elements like:
-- Interactive help text with step-by-step instructions
-- One-click copy function for test commands
-- Visual feedback for successful connections
-- Error handling with descriptive messages
-
-The settings persist across Burp Suite sessions, ensuring you only need to configure the extension once.
-
 ## 🔑 Setting Up Gemini AI
 
 <div align="center">
