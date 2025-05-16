@@ -40,7 +40,6 @@ Whether you're a penetration tester, security researcher, or web security enthus
         <li>⚙️ <b>Detailed technical analysis</b> with exploitation steps</li>
         <li>📊 <b>PoC examples and payloads</b> for confirmed vulnerabilities</li>
         <li>🧩 <b>Seamless integration</b> with Burp Suite's UI and context menu</li>
-        <li>⚡ <b>Real-time assessments</b> of security weaknesses</li>
         <li>🔒 <b>Automatic sensitive data masking</b> for secure AI processing</li>
         <li>🚨 <b>Enhanced detection of exposed credentials</b> and API keys</li>
       </ul>
@@ -178,22 +177,6 @@ The panel includes user-friendly elements like:
 - Visual feedback for successful connections
 - Error handling with descriptive messages
 
-### 🗄️ ExtensionSettings
-
-<details>
-<summary><b>Technical Details</b></summary>
-
-The ExtensionSettings component manages the persistence and retrieval of configuration data:
-
-- **Secure Storage**: API keys and settings are securely stored in Burp's persistence mechanism
-- **Default Values**: Sensible defaults are provided for unconfigured settings
-- **Configuration Options**:
-  - `useGemini`: Toggle for Gemini AI functionality
-  - `geminiApiKey`: Your personal Gemini API key
-  - `geminiBaseUrl`: The API endpoint for the selected model
-
-</details>
-
 The settings persist across Burp Suite sessions, ensuring you only need to configure the extension once.
 
 ## 🔑 Setting Up Gemini AI
@@ -265,19 +248,6 @@ The BurpGPT Analyzer helps security professionals generate and customize proof-o
 3. Customize exploit parameters
 4. Validate the vulnerability
 5. Document findings
-
-## 🔮 Extensibility with AI
-
-AI-powered extensibility opens up new possibilities for solving challenges that were previously difficult or even impossible with traditional code alone. Now, you can leverage AI to enhance security testing, automate tedious tasks, and gain deeper insights into web application vulnerabilities.
-
-<details>
-<summary><b>Future Development Plans</b></summary>
-
-- **Custom Training**: Support for fine-tuning on your own vulnerability dataset
-- **Offline Mode**: Support for running with local models
-- **Team Integration**: Collaboration features for security teams
-
-</details>
 
 ## 🔐 Sensitive Data Protection
 
